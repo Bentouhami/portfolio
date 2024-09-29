@@ -1,0 +1,183 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// model projects exemples:
+// 1. Langages de Programmation :
+// JavaScript
+// TypeScript
+// Python
+// Java
+// C#
+// PHP
+// Ruby
+// Go
+// C/C++
+// 2. Front-End :
+// React.js (pour tes projets en Next.js)
+// Next.js
+// Vue.js
+// Angular
+// Tailwind CSS
+// Bootstrap
+// Sass
+// HTML5
+// CSS3
+// 3. Back-End :
+// Node.js (avec Express)
+// Spring Boot (pour tes projets en Java)
+// ASP.NET Core (C#)
+// Django (Python)
+// Flask (Python)
+// Ruby on Rails
+// Laravel (PHP)
+// 4. Bases de Données :
+// PostgreSQL (déjà utilisé dans ton projet)
+// MySQL
+// MongoDB
+// SQLite
+// Prisma (pour l'ORM)
+// 5. Outils de Déploiement et Hébergement :
+// Vercel (idéal pour les projets Next.js)
+// Netlify
+// Heroku
+// AWS (Amazon Web Services)
+// Azure
+// Docker
+// 6. Gestion de Projets :
+// GitHub (pour versionner ton code)
+// GitLab
+// Jira (gestion de projet et de tâches)
+// Trello
+// 7. Outils de Test et Qualité :
+// Jest (tests unitaires pour JavaScript/TypeScript)
+// Cypress (tests end-to-end pour front-end)
+// Postman (tests d'API)
+// Selenium (tests de bout en bout pour les applications web)
+// 8. Autres Technologies :
+// GraphQL (API moderne)
+// REST (API)
+// Redis (caching)
+// WebSockets (communication temps réel)
+// JWT (authentification)
+model Technology {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  projects Project[] @relation("ProjectTechnologies")
+
+  @@map("technologies")
+}
+
+model Project {
+  id              Int               @id @default(autoincrement())
+  title           String
+  description     String
+  url             String            @db.Text
+  image           String            @db.Text
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  userId          Int
+  user            User              @relation(fields: [userId], references: [id])
+  Category        Category?         @relation(fields: [categoryId], references: [id])
+  categoryId      Int?
+  ProjectCategory ProjectCategory[]
+  technologies    Technology[]      @relation("ProjectTechnologies")
+
+  @@map("projects")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  password  String
+  projects  Project[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("users")
+}
+
+// catégories exemples:
+// Type de Projet (selon l'objectif ou le domaine du projet)
+// Site Web Personnel
+// Application Web
+// Application Mobile
+// Projet Fullstack
+// Projet Backend
+// Projet Frontend
+// API
+// ERP (systèmes de gestion)
+// E-commerce
+// Jeu Vidéo
+// Application Desktop
+// 2. Industries ou Domaines d'Application (selon le secteur d'utilisation)
+// Santé
+// Éducation
+// Finance
+// Restauration
+// Logistique
+// Transport
+// Commerce en Ligne
+// Immobilier
+// Divertissement
+// Voyages
+// Événements
+// 3. Technologies Utilisées (pour catégoriser en fonction des technologies principales du projet)
+// React.js
+// Next.js
+// Node.js
+// Spring Boot
+// Django
+// ASP.NET Core
+// PostgreSQL
+// MongoDB
+// Docker
+// GraphQL
+// JWT
+// 4. Nature des Projets (selon le but ou la complexité)
+// Projets Scolaires
+// Projets Personnels
+// Projets Freelance
+// Contributions Open Source
+// Projets de Stage
+// Projets Professionnels
+// 5. Fonctionnalités ou Types de Solutions
+// Systèmes de Gestion (ERP, gestion des stocks, gestion des clients)
+// E-commerce (boutiques en ligne, gestion des produits)
+// Portfolio (présentation de projets)
+// Réseaux Sociaux (plateformes sociales, forums)
+// Blogs
+// Applications CRUD (gestion des données)
+// SaaS (Software as a Service)
+model Category {
+  id              Int               @id @default(autoincrement())
+  name            String            @unique @db.VarChar(100)  
+  slug            String            @unique @db.VarChar(100)
+  projectCategory ProjectCategory[]
+  projects        Project[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@map("categories")
+}
+
+model ProjectCategory {
+  projectId  Int
+  categoryId Int
+  project    Project  @relation(fields: [projectId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  @@id([projectId, categoryId])
+}
